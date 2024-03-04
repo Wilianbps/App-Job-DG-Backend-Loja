@@ -1,0 +1,13 @@
+ /*  const pool = await sql.connect(objectConnection);
+    const existingConfig = await pool.request()
+      .query`SELECT * FROM DADOS_CONEXAO_DATABASE`;
+
+    if (existingConfig.recordsets[0].length > 0) {
+      const result =
+        await sql.query`UPDATE DADOS_CONEXAO_DATABASE SET Nome_Server = ${config.server}, Nome_Database = ${config.database}, Nome_Usuario = ${config.user}, Senha = ${config.password}`;
+      return result;
+    } else {
+      const result =
+        await sql.query`INSERT INTO DADOS_CONEXAO_DATABASE (Nome_Server, Nome_Database, Nome_Usuario, Senha) VALUES (${config.server}, ${config.database}, ${config.user}, ${config.password})`;
+      return result;
+    } */
