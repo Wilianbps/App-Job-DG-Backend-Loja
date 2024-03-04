@@ -3,9 +3,6 @@ import allJobsByDateModels from "../models/allJobsByDateModels.js";
 async function getAllJobs(req, res) {
   const { startTime } = req.query;
 
-  console.log(startTime);
-
-  console.log(startTime);
   try {
     const allJobsByDate = await allJobsByDateModels.getJobsByDate(startTime);
     const transformPropsAllJobs = await allJobsByDate.recordsets[0].map(
