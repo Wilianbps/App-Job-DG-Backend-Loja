@@ -5,9 +5,11 @@ async function getAllUsers(req, res) {
   return res.status(200).json(users.recordsets);
 }
 
-async function startJobTableUsers(req, res) {
+async function startJob(req, res) {
   try {
     const newJob = req.body;
+
+    if (!newJob) return res.status(400).end();
 
     const result = await jobsUsersModels.startJobTableUsers(newJob);
 
@@ -29,14 +31,14 @@ async function startJobTableUsers(req, res) {
   }
 }
 
-async function updateJobUser(req, res) {
+async function updateJob(req, res) {
   setTimeout(async () => {
     try {
       const { id } = req.params;
+      console.log("id", id);
       const { status } = req.query;
       if (id && status) {
         const result = await jobsUsersModels.updateJob(id, status);
-
 
         let transformPropsAllJobs = await result.recordsets[0].map((job) => ({
           id: job.ID,
@@ -58,4 +60,4 @@ async function updateJobUser(req, res) {
   }, [10000]);
 }
 
-export default { getAllUsers, startJobTableUsers, updateJobUser };
+export default { getAllUsers, startJob, updateJob };

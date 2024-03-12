@@ -1,9 +1,9 @@
 import express from "express";
 import config from "./configs/config.js";
-import jobsUsersController from "./controllers/jobsUsersController.js";
+import jobslocalDBController from "./controllers/jobslocalDBController.js";
 
 import allJobsByDateController from "./controllers/allJobsByDateController.js";
-import userController from "./controllers/userController.js";
+import localDBController from "./controllers/localDBController.js";
 import configConnectionDBController from "./controllers/configConnectionDBController.js";
 import testConnectionController from "./controllers/testConnectionController.js";
 
@@ -30,16 +30,12 @@ router.post(
   configConnectionDBController.VerifyConnectionDB
 );
 
-/* router.get("/jobs/users", jobsUsersController.getAllUsers); */
 router.get("/jobs", allJobsByDateController.getAllJobs);
 
-/* router.get("/jobs/users", jobsUsersController.getJobsUsersByDate); */
-router.post("/jobs/users", jobsUsersController.startJobTableUsers);
+router.post("/jobs/path-remoteToStoreDB", jobslocalDBController.startJob);
 
-router.put("/jobs/users/:id", jobsUsersController.updateJobUser);
+router.put("/jobs/path-remoteToStoreDB/:id", jobslocalDBController.updateJob);
 
-/* router.get("/users", userController.insertUsers); */
-
-router.post("/users", userController.insertUsers);
+router.post("/register-path-remoteToStoreDB", localDBController.insertRegisterInLocalDB);
 
 export default router;

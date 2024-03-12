@@ -15,18 +15,20 @@ async function getUsers() {
   }
 }
 
-async function insertUserInTable(dataUsers) {
+async function insertDataInTable(data) {
   const pool = await connection.openConnection();
 
   const identifyOn = "SET IDENTITY_INSERT USUARIO_DGCS ON;";
   const identifyOff = "SET IDENTITY_INSERT USUARIO_DGCS OFF;";
 
   try {
-    const query = `${identifyOn} INSERT INTO USUARIO_DGCS (ID_USUARIO_DGCS, NOME_COMPLETO, 
-      CPF, EMAIL, PERFIL_ACESSO, LOGIN_USUARIO, SENHA, SITUACAO, DATA_CRIACAO, CODIGO_LOJA) 
-      VALUES (${dataUsers.ID_USUARIO_DGCS}, '${dataUsers.NOME_COMPLETO}', '${dataUsers.CPF}', '${dataUsers.EMAIL}', 
-      '${dataUsers.PERFIL_ACESSO}', '${dataUsers.LOGIN_USUARIO}', '${dataUsers.SENHA}', ${dataUsers.SITUACAO}, 
-      '${dataUsers.DATA_CRIACAO}', '${dataUsers.CODIGO_LOJA}') ${identifyOff}`;
+    const { stageId, type, table, ...copyData } = data;
+
+    const query = `${identifyOn} INSERT INTO ${data.table} (${Object.keys(
+      copyData
+    ).join(", ")}) VALUES (${Object.values(copyData)
+      .map((value) => `'${value}'`)
+      .join(", ")}) ${identifyOff}`;
 
     const result = await pool.request().query(query);
 
@@ -39,4 +41,15 @@ async function insertUserInTable(dataUsers) {
   }
 }
 
-export default { insertUserInTable, getUsers };
+async function updateDataInTable(data) {
+  const pool = await connection.openConnection();
+
+  const identifyOn = "SET IDENTITY_INSERT USUARIO_DGCS ON;";
+  const identifyOff = "SET IDENTITY_INSERT USUARIO_DGCS OFF;";
+
+  const { type, table, ...copyData } = data;
+
+  console.log("copydata", copyData);
+}
+
+export default { insertDataInTable, updateDataInTable, getUsers };
