@@ -6,6 +6,7 @@ import allJobsByDateController from "./controllers/allJobsByDateController.js";
 import localDBController from "./controllers/localDBController.js";
 import configConnectionDBController from "./controllers/configConnectionDBController.js";
 import testConnectionController from "./controllers/testConnectionController.js";
+import settingJobExecutionController from "./controllers/settingJobExecutionController.js";
 
 const router = express.Router();
 
@@ -37,5 +38,9 @@ router.post("/jobs/path-remoteToStoreDB", jobslocalDBController.startJob);
 router.put("/jobs/path-remoteToStoreDB/:id", jobslocalDBController.updateJob);
 
 router.post("/register-path-remoteToStoreDB", localDBController.insertRegisterInLocalDB);
+
+router.post("/setting-job-execution", settingJobExecutionController.addSettingJobExecution);
+
+router.get("/setting-job-execution", settingJobExecutionController.getSettingJobExecution)
 
 export default router;

@@ -12,6 +12,7 @@ async function getAllJobs(req, res) {
         startTime: job.DATA_HORA,
         table: job.TABELA,
         action: job.ACAO,
+        path: job.CAMINHO,
         status: job.STATUS_JOB,
       })
     );

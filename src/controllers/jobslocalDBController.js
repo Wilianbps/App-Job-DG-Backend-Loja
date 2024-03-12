@@ -1,7 +1,7 @@
-import jobsUsersModels from "../models/jobsUsersModels.js";
+import jobsLocalDBModels from "../models/jobsLocalDBModels.js";
 
 async function getAllUsers(req, res) {
-  const users = await jobsUsersModels.getAll();
+  const users = await jobsLocalDBModels.getAll();
   return res.status(200).json(users.recordsets);
 }
 
@@ -11,13 +11,14 @@ async function startJob(req, res) {
 
     if (!newJob) return res.status(400).end();
 
-    const result = await jobsUsersModels.startJobTableUsers(newJob);
+    const result = await jobsLocalDBModels.startJobTableUsers(newJob);
 
     let transformPropsAllJobs = await result.recordsets[0].map((job) => ({
       id: job.ID,
       name: job.NOME,
       startTime: job.DATA_HORA,
       table: job.TABELA,
+      path: job.CAMINHO,
       action: job.ACAO,
       status: job.STATUS_JOB,
     }));
@@ -35,16 +36,16 @@ async function updateJob(req, res) {
   setTimeout(async () => {
     try {
       const { id } = req.params;
-      console.log("id", id);
       const { status } = req.query;
       if (id && status) {
-        const result = await jobsUsersModels.updateJob(id, status);
+        const result = await jobsLocalDBModels.updateJob(id, status);
 
         let transformPropsAllJobs = await result.recordsets[0].map((job) => ({
           id: job.ID,
           name: job.NOME,
           startTime: job.DATA_HORA,
           table: job.TABELA,
+          path: job.CAMINHO,
           action: job.ACAO,
           status: job.STATUS_JOB,
         }));
