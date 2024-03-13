@@ -13,7 +13,7 @@ async function insertRegisterInLocalDB(req, res) {
         console.log(dataUsers[index]);
         return res.status(200).send();
       } else if (item.type == "U") {
-        /*     await dataLocalDBModels.updateDataInTable(dataUsers[index]); */
+        await dataLocalDBModels.updateDataInTable(dataUsers[index]);
         console.log(dataUsers[index]);
         return res.status(200).send();
       }

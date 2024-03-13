@@ -9,7 +9,7 @@ async function testConnection(_req, res) {
     } catch (error) {
       res.status(400).json({ message:  "Erro ao configurar conexão com banco local. Verifique as informações de conexão fornecidas!" });
     }
-  }, [3000]);
+  }, [1000]);
 }
 
 export default { testConnection };

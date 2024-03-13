@@ -39,7 +39,7 @@ router.put("/jobs/path-remoteToStoreDB/:id", jobslocalDBController.updateJob);
 
 router.post("/register-path-remoteToStoreDB", localDBController.insertRegisterInLocalDB);
 
-router.post("/setting-job-execution", settingJobExecutionController.addSettingJobExecution);
+router.put("/setting-job-execution", settingJobExecutionController.updateSettingJobExecution);
 
 router.get("/setting-job-execution", settingJobExecutionController.getSettingJobExecution)
 

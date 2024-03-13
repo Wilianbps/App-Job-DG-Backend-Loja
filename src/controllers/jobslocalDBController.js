@@ -36,9 +36,19 @@ async function updateJob(req, res) {
   setTimeout(async () => {
     try {
       const { id } = req.params;
-      const { status } = req.query;
-      if (id && status) {
-        const result = await jobsLocalDBModels.updateJob(id, status);
+      const { amountRecords, statusJob } = req.body;
+
+      console.log(id);
+      console.log(amountRecords);
+      console.log(statusJob);
+
+
+      if (id && statusJob && amountRecords) {
+        const result = await jobsLocalDBModels.updateJob(
+          id,
+          amountRecords,
+          statusJob
+        );
 
         let transformPropsAllJobs = await result.recordsets[0].map((job) => ({
           id: job.ID,

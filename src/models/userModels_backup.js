@@ -47,7 +47,6 @@ async function updateDataInTable(data) {
 
   const { type, table, ...copyData } = data;
 
-  console.log("copydata", copyData);
 }
 
 export default { insertDataInTable, updateDataInTable, getUsers };

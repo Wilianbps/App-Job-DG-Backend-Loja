@@ -1,14 +1,12 @@
 import settingJobExecutionModel from "../models/settingJobExecutionModel.js";
 
-async function addSettingJobExecution(req, res) {
+async function updateSettingJobExecution(req, res) {
   try {
-    const { setting } = req.query;
+    const settings = req.body;
 
-    if (!setting) return res.status(400).send();
+    if (!settings) return res.status(400).send();
 
-    const result = await settingJobExecutionModel.insertSettingJobExecution(
-      setting
-    );
+    const result = await settingJobExecutionModel.updateSettingJobExecution(settings);
 
     res.status(200).json(result);
   } catch (error) {
@@ -26,4 +24,4 @@ async function getSettingJobExecution(req, res) {
   }
 }
 
-export default { addSettingJobExecution, getSettingJobExecution };
+export default { updateSettingJobExecution, getSettingJobExecution };

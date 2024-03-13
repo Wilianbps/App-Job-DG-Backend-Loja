@@ -1,10 +1,10 @@
 import connection from "./connection.js";
 
-async function insertSettingJobExecution(settting) {
+async function updateSettingJobExecution(setttings) {
   const pool = await connection.openConnection();
 
   try {
-    const query = `INSERT INTO CONFIG_EXECUCAO_JOBS (STATUS_EXECUCAO, INTERVALO_EXECUCAO) VALUES (${settting.status}, ${settting.executionInterval})`;
+    const query = `UPDATE CONFIG_EXECUCAO_JOBS SET STATUS_EXECUCAO = ${setttings.status}, INTERVALO_EXECUCAO = ${setttings.interval} OUTPUT INSERTED.STATUS_EXECUCAO AS status, INSERTED.INTERVALO_EXECUCAO AS interval`;
 
     const result = await pool.request().query(query);
 
@@ -20,7 +20,7 @@ async function insertSettingJobExecution(settting) {
 async function selectSettingJobExecution() {
   const pool = await connection.openConnection();
   try {
-    const query = `SELECT STATUS_EXECUCAO as status, INTERVALO_EXECUCAO as executionInterval FROM CONFIG_EXECUCAO_JOBS`;
+    const query = `SELECT STATUS_EXECUCAO as status, INTERVALO_EXECUCAO as interval FROM CONFIG_EXECUCAO_JOBS`;
 
     const result = await pool.request().query(query);
 
@@ -33,4 +33,4 @@ async function selectSettingJobExecution() {
   }
 }
 
-export default { insertSettingJobExecution, selectSettingJobExecution };
+export default { updateSettingJobExecution, selectSettingJobExecution };

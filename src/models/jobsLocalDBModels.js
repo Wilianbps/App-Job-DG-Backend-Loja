@@ -31,10 +31,10 @@ async function startJobTableUsers(job) {
   }
 }
 
-async function updateJob(id, status) {
+async function updateJob(id, amountRecords, status) {
   const pool = await connection.openConnection();
   try {
-    const query = `UPDATE JOBS SET STATUS_JOB = '${status}' OUTPUT INSERTED.ID, INSERTED.NOME, INSERTED.DATA_HORA, INSERTED.TABELA, INSERTED.CAMINHO, INSERTED.ACAO, 
+    const query = `UPDATE JOBS SET ACAO = '${amountRecords}', STATUS_JOB = '${status}' OUTPUT INSERTED.ID, INSERTED.NOME, INSERTED.DATA_HORA, INSERTED.TABELA, INSERTED.CAMINHO, INSERTED.ACAO, 
     INSERTED.STATUS_JOB WHERE ID = ${Number(id)}`;
     const result = await pool.request().query(query);
     return result;
