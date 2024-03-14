@@ -34,10 +34,14 @@ async function startJobTableUsers(job) {
 async function updateJob(id, amountRecords, status) {
   const pool = await connection.openConnection();
   try {
+
+
     const query = `UPDATE JOBS SET ACAO = '${amountRecords}', STATUS_JOB = '${status}' OUTPUT INSERTED.ID, INSERTED.NOME, INSERTED.DATA_HORA, INSERTED.TABELA, INSERTED.CAMINHO, INSERTED.ACAO, 
     INSERTED.STATUS_JOB WHERE ID = ${Number(id)}`;
     const result = await pool.request().query(query);
-    return result;
+
+
+    return result.recordsets[0];
   } catch (error) {
     console.log(`Erro ao executar a consulta ${error.message}`);
   } finally {

@@ -42,28 +42,27 @@ async function updateJob(req, res) {
       console.log(amountRecords);
       console.log(statusJob);
 
+      if (!id || !statusJob) return res.status(400).send();
 
-      if (id && statusJob && amountRecords) {
-        const result = await jobsLocalDBModels.updateJob(
-          id,
-          amountRecords,
-          statusJob
-        );
+      const result = await jobsLocalDBModels.updateJob(
+        id,
+        amountRecords,
+        statusJob
+      );
 
-        let transformPropsAllJobs = await result.recordsets[0].map((job) => ({
-          id: job.ID,
-          name: job.NOME,
-          startTime: job.DATA_HORA,
-          table: job.TABELA,
-          path: job.CAMINHO,
-          action: job.ACAO,
-          status: job.STATUS_JOB,
-        }));
+      let transformPropsAllJobs = await result.map((job) => ({
+        id: job.ID,
+        name: job.NOME,
+        startTime: job.DATA_HORA,
+        table: job.TABELA,
+        path: job.CAMINHO,
+        action: job.ACAO,
+        status: job.STATUS_JOB,
+      }));
 
-        transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
+      transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
 
-        return res.status(200).send(transformPropsAllJobs[0]);
-      }
+      return res.status(200).send(transformPropsAllJobs[0]);
     } catch (error) {
       res.status(400).end();
       console.log(error, "erro na solicitação");
