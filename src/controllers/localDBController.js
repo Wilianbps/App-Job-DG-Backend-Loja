@@ -10,11 +10,9 @@ async function insertRegisterInLocalDB(req, res) {
     dataUsers.forEach(async (item, index) => {
       if (item.type == "I") {
         await dataLocalDBModels.insertDataInTable(dataUsers[index]);
-        console.log(dataUsers[index]);
         return res.status(200).send();
       } else if (item.type == "U") {
         await dataLocalDBModels.updateDataInTable(dataUsers[index]);
-        console.log(dataUsers[index]);
         return res.status(200).send();
       }
     });

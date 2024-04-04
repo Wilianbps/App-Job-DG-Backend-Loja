@@ -46,7 +46,7 @@ async function updateDataInTable(data) {
 
   try {
 
-    const { stageId, type, table, ...copyData } = data;
+    const { stageId, type, table, id, ...copyData } = data;
 
     const keys = Object.keys(copyData);
     const values = Object.values(copyData);
@@ -54,13 +54,14 @@ async function updateDataInTable(data) {
 
     // Construir a string para a parte SET do update
     for (let i = 1; i < keys.length; i++) {
+   
       updateValues += `${keys[i]} = '${values[i]}'`;
       if (i !== keys.length - 1) {
         updateValues += ", ";
       }
     }
 
-    const query = `UPDATE ${data.table} SET ${updateValues} WHERE ${keys[0]} = '${values[0]}'`;
+    const query = `UPDATE ${data.table} SET ${updateValues} WHERE ${id}`;
     const result = await pool.request().query(query);
 
     return result;
