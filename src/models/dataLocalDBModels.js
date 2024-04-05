@@ -46,7 +46,9 @@ async function updateDataInTable(data) {
 
   try {
 
-    const { stageId, type, table, id, ...copyData } = data;
+    const { stageId, type, table, whereId, ...copyData } = data;
+
+    console.log("WHERE DENTRO DO MODEL", whereId);
 
     const keys = Object.keys(copyData);
     const values = Object.values(copyData);
@@ -61,7 +63,7 @@ async function updateDataInTable(data) {
       }
     }
 
-    const query = `UPDATE ${data.table} SET ${updateValues} WHERE ${id}`;
+    const query = `UPDATE ${data.table} SET ${updateValues} WHERE ${whereId}`;
     const result = await pool.request().query(query);
 
     return result;
