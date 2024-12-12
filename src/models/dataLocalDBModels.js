@@ -22,13 +22,17 @@ async function insertDataInTable(data) {
   const identifyOff = `SET IDENTITY_INSERT ${data.table} OFF;`;
 
   try {
-    const { stageId, type, table, ...copyData } = data;
+    const { stageId, type, table, whereId, ...copyData } = data;
+
+    console.log("whereId", whereId);
 
     const query = `${identifyOn} INSERT INTO ${data.table} (${Object.keys(
       copyData
     ).join(", ")}) VALUES (${Object.values(copyData)
-      .map((value) => `'${value}'`)
+      .map((value) => (value === null ? 'NULL' : `'${value}'`))
       .join(", ")}) ${identifyOff}`;
+
+      console.log("query", query)
 
     const result = await pool.request().query(query);
 

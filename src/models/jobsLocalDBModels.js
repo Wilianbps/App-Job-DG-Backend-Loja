@@ -34,12 +34,9 @@ async function startJobTableUsers(job) {
 async function updateJob(id, amountRecords, status) {
   const pool = await connection.openConnection();
   try {
-
-
     const query = `UPDATE JOBS SET ACAO = '${amountRecords}', STATUS_JOB = '${status}' OUTPUT INSERTED.ID, INSERTED.NOME, INSERTED.DATA_HORA, INSERTED.TABELA, INSERTED.CAMINHO, INSERTED.ACAO, 
     INSERTED.STATUS_JOB WHERE ID = ${Number(id)}`;
     const result = await pool.request().query(query);
-
 
     return result.recordsets[0];
   } catch (error) {
@@ -50,4 +47,62 @@ async function updateJob(id, amountRecords, status) {
   }
 }
 
-export default { startJobTableUsers, updateJob };
+async function searchUsersOnStage(table, storeCode) {
+  const pool = await connection.openConnection();
+
+  try {
+    const query = `SELECT * FROM STAGE WHERE (TABELA ='${table}' AND CODIGO_LOJA = '${storeCode}' AND STAGE_STATUS = 1)`;
+
+    const result = await pool.request().query(query);
+
+    return result;
+  } catch (error) {
+    console.log(`Erro ao executar a consulta ${error.message}`);
+  } finally {
+    await connection.closeConnection(pool);
+    console.log("Conexão fechada");
+  }
+}
+
+async function searchUsersInTableUsers(id, table) {
+  const pool = await connection.openConnection();
+
+  try {
+    const query = `SELECT * FROM ${table} WHERE ${id}`;
+
+    const result = await pool.request().query(query);
+
+    return result;
+  } catch (error) {
+    console.log(`Erro ao executar a consulta ${error.message}`);
+  } finally {
+    await connection.closeConnection(pool);
+    console.log("Conexão fechada");
+  }
+}
+
+async function updateStageStatus(id) {
+  const pool = await connection.openConnection();
+
+  try {
+    const dateProcessed = new Date().toISOString();
+    const query = `UPDATE STAGE SET STAGE_STATUS = 2, DATA_PROCESSADO = '${dateProcessed}' WHERE STAGE_ID = ${id}`;
+
+    const result = await pool.request().query(query);
+
+    return result;
+  } catch (error) {
+    console.log(`Erro ao executar a consulta ${error.message}`);
+  } finally {
+    await connection.closeConnection(pool);
+    console.log("Conexão fechada");
+  }
+}
+
+export default {
+  startJobTableUsers,
+  updateJob,
+  searchUsersOnStage,
+  searchUsersInTableUsers,
+  updateStageStatus,
+};
