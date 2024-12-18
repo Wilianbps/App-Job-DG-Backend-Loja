@@ -24,8 +24,6 @@ async function insertDataInTable(data) {
   try {
     const { stageId, type, table, whereId, ...copyData } = data;
 
-    console.log("whereId", whereId);
-
     const query = `${identifyOn} INSERT INTO ${data.table} (${Object.keys(
       copyData
     ).join(", ")}) VALUES (${Object.values(copyData)
@@ -51,8 +49,6 @@ async function updateDataInTable(data) {
   try {
 
     const { stageId, type, table, whereId, ...copyData } = data;
-
-    console.log("WHERE DENTRO DO MODEL", whereId);
 
     const keys = Object.keys(copyData);
     const values = Object.values(copyData);

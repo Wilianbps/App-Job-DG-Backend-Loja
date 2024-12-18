@@ -4,7 +4,7 @@ const config = {
   server: 'WIL-BRIT0\\SQLEXPRESS',
   database: 'DGCS_ENTBIP',
   port: 1433,
-  options: { encrypt: true, trustServerCertificate: true }
+  options: { encrypt: true, trustServerCertificate: true }, 
 };
 
 export default config;
