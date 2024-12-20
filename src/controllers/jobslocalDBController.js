@@ -24,6 +24,7 @@ async function startJob(req, res) {
     let transformPropsAllJobs = await result.recordsets[0]?.map((job) => ({
       id: job.ID,
       name: job.NOME,
+      
       startTime: job.DATA_HORA,
       table: job.TABELA,
       path: job.CAMINHO,

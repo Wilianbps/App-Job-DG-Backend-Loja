@@ -1,5 +1,5 @@
 import sql from "mssql";
-import config from "../configs/config.js";
+import config from "../config.js";
 
 let pool = null; // Pool global
 let isConnecting = false; // Evitar condições de corrida

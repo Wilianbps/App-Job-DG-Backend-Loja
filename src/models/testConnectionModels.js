@@ -1,5 +1,5 @@
 import connection from "./connection.js";
-import config from "../configs/config.js";
+import config from "../config.js";
 import sql from "mssql";
 
 async function testConnectionDatabase() {

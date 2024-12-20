@@ -20,7 +20,7 @@ async function connectionDB(config) {
     const jsonString = util.inspect(objectConnection, { depth: null });
 
     fs.writeFileSync(
-      "src/configs/config.js",
+      "src/config.js",
       `const config = ${jsonString};\n\nexport default config;`
     );
   } catch (error) {

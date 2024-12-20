@@ -1,5 +1,5 @@
 import express from "express";
-import config from "./configs/config.js";
+import config from "./config.js";
 import jobslocalDBController from "./controllers/jobslocalDBController.js";
 
 import allJobsByDateController from "./controllers/allJobsByDateController.js";
