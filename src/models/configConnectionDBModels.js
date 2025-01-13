@@ -19,10 +19,7 @@ async function connectionDB(config) {
     //util.inpect = mantem a versao original do objeto, sem as aspas duplas na propriedade
     const jsonString = util.inspect(objectConnection, { depth: null });
 
-    fs.writeFileSync(
-      "src/config.js",
-      `const config = ${jsonString};\n\nexport default config;`
-    );
+    fs.writeFileSync("src/config.js", `const config = ${jsonString};\n\nexport default config;`);
   } catch (error) {
     throw error;
   } finally {

@@ -2,38 +2,35 @@ import sql from "mssql";
 import config from "../config.js";
 
 let pool = null; // Pool global
-let isConnecting = false; // Evitar condições de corrida
+let connectionPromise = null; // Promise compartilhada para evitar múltiplas conexões simultâneas
 
 async function openConnection() {
   try {
-    // Evita múltiplas conexões simultâneas
-    if (isConnecting) {
-      console.log("Aguardando outra conexão ser estabelecida...");
-      while (isConnecting) {
-        await new Promise((resolve) => setTimeout(resolve, 100)); // Espera 100ms
-      }
-    }
-
+    // Reutiliza conexão existente
     if (pool && pool.connected) {
-      console.log("Conexão existente reutilizada.");
+      console.log("Reutilizando conexão existente com o banco de dados.");
       return pool;
     }
 
-    // Bloqueia novas conexões enquanto esta é criada
-    isConnecting = true;
-    console.log("Criando nova conexão com o banco de dados...");
-    pool = await sql.connect(config);
+    // Evita múltiplas conexões simultâneas
+    if (connectionPromise) {
+      console.log("Aguardando conexão existente ser estabelecida...");
+      await connectionPromise;
+      return pool;
+    }
 
-    // Testa a conexão com um comando simples
-    await pool.request().query("SELECT 1");
+    // Cria uma nova conexão
+    console.log("Criando nova conexão com o banco de dados...");
+    connectionPromise = sql.connect(config);
+    pool = await connectionPromise;
 
     console.log("Conexão estabelecida com sucesso.");
     return pool;
   } catch (error) {
-    console.error("Erro ao abrir conexão:", error.message);
-    throw error; // Propaga o erro
+    console.error("Erro ao abrir conexão com o banco de dados:", error.message);
+    throw error;
   } finally {
-    isConnecting = false; // Libera o bloqueio
+    connectionPromise = null; // Libera a promise para próximas conexões
   }
 }
 
@@ -53,4 +50,8 @@ async function closeConnection() {
   }
 }
 
-export default { openConnection, closeConnection };
+function isConnected() {
+  return pool && pool.connected;
+}
+
+export default { openConnection, closeConnection, isConnected };
