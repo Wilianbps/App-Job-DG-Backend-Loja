@@ -40,7 +40,6 @@ async function closeConnection() {
       console.log("Fechando conexão com o banco de dados...");
       await pool.close();
       pool = null; // Reseta o pool global
-      console.log("Conexão fechada com sucesso.");
     } else {
       console.log("Nenhuma conexão ativa para fechar.");
     }

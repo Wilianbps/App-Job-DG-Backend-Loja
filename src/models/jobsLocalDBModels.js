@@ -42,7 +42,8 @@ async function updateJob(id, amountRecords, status) {
       const idsToUpdate = jobsExecuting.recordset.map((job) => job.ID).join(", ");
       const updateExecutingJobs = `
      UPDATE JOBS 
-     SET STATUS_JOB = 'processado' 
+     SET STATUS_JOB = 'processado',
+     ACAO = 0 
      WHERE ID IN (${idsToUpdate})
    `;
       await pool.request().query(updateExecutingJobs);

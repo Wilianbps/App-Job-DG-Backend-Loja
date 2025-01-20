@@ -1,4 +1,7 @@
 import jobsLocalDBModels from "../models/jobsLocalDBModels.js";
+import pLimit from 'promise-limit'
+
+const limit = pLimit(1);
 
 async function getAllUsers(req, res) {
   const users = await jobsLocalDBModels.getAll();
@@ -13,35 +16,39 @@ async function startJob(req, res) {
       return res.status(400).end(); // Validação caso o corpo da requisição esteja vazio
     }
 
-    // Chama o model para inserir o novo job na tabela
-    const result = await jobsLocalDBModels.startJobTableUsers(newJob);
+    // Executa o job dentro do limitador
+    const jobResult = await limit(async () => {
+      // Chama o model para inserir o novo job na tabela
+      const result = await jobsLocalDBModels.startJobTableUsers(newJob);
 
-    // Verifica se o resultado da consulta foi bem-sucedido
-    if (!result || !result.recordsets || result.recordsets.length === 0) {
-      return res.status(500).send("Erro ao inserir o job na tabela.");
-    }
+      // Verifica se o resultado da consulta foi bem-sucedido
+      if (!result || !result.recordsets || result.recordsets.length === 0) {
+        throw new Error("Erro ao inserir o job na tabela.");
+      }
 
-    let transformPropsAllJobs = await result.recordsets[0]?.map((job) => ({
-      id: job.ID,
-      name: job.NOME,
-      
-      startTime: job.DATA_HORA,
-      table: job.TABELA,
-      path: job.CAMINHO,
-      action: job.ACAO,
-      status: job.STATUS_JOB,
-    }));
+      const transformPropsAllJobs = result.recordsets[0]?.map((job) => ({
+        id: job.ID,
+        name: job.NOME,
+        startTime: job.DATA_HORA,
+        table: job.TABELA,
+        path: job.CAMINHO,
+        action: job.ACAO,
+        status: job.STATUS_JOB,
+      }));
 
-    // Modifica o id para string, se necessário
-    if (transformPropsAllJobs && transformPropsAllJobs[0]) {
-      transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
-    }
+      // Modifica o id para string, se necessário
+      if (transformPropsAllJobs && transformPropsAllJobs[0]) {
+        transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
+      }
 
-    res.status(200).json(transformPropsAllJobs[0]); // Retorna o primeiro job inserido
+      return transformPropsAllJobs[0]; // Retorna o primeiro job inserido
+    });
 
+    // Envia o resultado do job processado
+    res.status(200).json(jobResult);
   } catch (error) {
-    res.status(400).end();
     console.error(error, "erro na solicitação teste start job");
+    res.status(400).send({ message: error.message });
   }
 }
 
@@ -52,33 +59,39 @@ async function updateJob(req, res) {
 
     if (!id || !statusJob) return res.status(400).send();
 
-    // Atraso de 10 segundos
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    // Executa o update dentro do limitador
+    const jobResult = await limit(async () => {
+      // Simula atraso de 10 segundos (se necessário)
+      await new Promise((resolve) => setTimeout(resolve, 10000));
 
-    const result = await jobsLocalDBModels.updateJob(id, amountRecords, statusJob);
+      const result = await jobsLocalDBModels.updateJob(id, amountRecords, statusJob);
 
-    // Verifique se result não é vazio ou indefinido antes de continuar
-    if (!result || result.length === 0) {
-      return res.status(404).json({ message: "Job não encontrado ou não foi atualizado." });
-    }
+      // Verifique se result não é vazio ou indefinido antes de continuar
+      if (!result || result.length === 0) {
+        throw new Error("Job não encontrado ou não foi atualizado.");
+      }
 
-    // Mapeamento dos resultados
-    let transformPropsAllJobs = result.map((job) => ({
-      id: job.ID,
-      name: job.NOME,
-      startTime: job.DATA_HORA,
-      table: job.TABELA,
-      path: job.CAMINHO,
-      action: job.ACAO,
-      status: job.STATUS_JOB,
-    }));
+      // Mapeamento dos resultados
+      const transformPropsAllJobs = result.map((job) => ({
+        id: job.ID,
+        name: job.NOME,
+        startTime: job.DATA_HORA,
+        table: job.TABELA,
+        path: job.CAMINHO,
+        action: job.ACAO,
+        status: job.STATUS_JOB,
+      }));
 
-    transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
+      transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
 
-    return res.status(200).send(transformPropsAllJobs[0]);
+      return transformPropsAllJobs[0];
+    });
+
+    // Retorna o resultado do update processado
+    return res.status(200).send(jobResult);
   } catch (error) {
-    console.log(error, "erro na solicitação teste updateJob");
-    return res.status(400).send({ message: "Erro ao processar a solicitação." });
+    console.error(error, "Erro na solicitação teste updateJob");
+    return res.status(400).send({ message: error.message });
   }
 }
 
