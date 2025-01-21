@@ -8,8 +8,8 @@ const app = express();
 app.use(cors());
 
 // Configurar o limite máximo para JSON e URL-encoded
-app.use(express.json({ limit: '100mb' })); // Define o limite para JSON
-app.use(express.urlencoded({ limit: '100mb', extended: true })); // Define o limite para forms
+app.use(express.json({ limit: '500mb' })); // Define o limite para JSON
+app.use(express.urlencoded({ limit: '500mb', extended: true })); // Define o limite para forms
 
 // Adicionar rotas
 app.use(router);

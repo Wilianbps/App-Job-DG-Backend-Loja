@@ -1,4 +1,4 @@
-import config from "../config.js";
+/* import config from "../config.js";
 import sql from "mssql";
 
 async function testConnectionDatabase() {
@@ -12,6 +12,25 @@ async function testConnectionDatabase() {
   } finally {
     console.log("Conexão encerrada.");
   }
+}
+
+export default { testConnectionDatabase };
+ */
+
+import config from "../config.js";
+import sql from "mssql";
+
+async function testConnectionDatabase() {
+
+    try {
+      await sql.connect(config);
+    } catch (error) {
+      throw error;
+    } finally {
+      await sql.close();
+      console.log("Conexão fechada");
+    }
+
 }
 
 export default { testConnectionDatabase };

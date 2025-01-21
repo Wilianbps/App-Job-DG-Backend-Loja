@@ -33,23 +33,8 @@ async function updateJob(id, amountRecords, status) {
   const pool = await connection.openConnection();  // Abre a conexão
 
   try {
-    // 1. Verificar se existe algum job "executando"
-    const checkQuery = `SELECT ID FROM JOBS WHERE STATUS_JOB = 'em execução'`;
-    const jobsExecuting = await pool.request().query(checkQuery);
 
-    // 2. Atualizar jobs em execução para "processado"
-    if (jobsExecuting.recordset.length > 0) {
-      const idsToUpdate = jobsExecuting.recordset.map((job) => job.ID).join(", ");
-      const updateExecutingJobs = `
-     UPDATE JOBS 
-     SET STATUS_JOB = 'processado',
-     ACAO = 0 
-     WHERE ID IN (${idsToUpdate})
-   `;
-      await pool.request().query(updateExecutingJobs);
-    }
-
-    // 3. Atualizar o job atual
+    // Atualizar o job atual
     const query = `UPDATE JOBS SET ACAO = '${amountRecords}', STATUS_JOB = '${status}' 
  OUTPUT INSERTED.ID, INSERTED.NOME, INSERTED.DATA_HORA, INSERTED.TABELA, 
  INSERTED.CAMINHO, INSERTED.ACAO, INSERTED.STATUS_JOB WHERE ID = ${Number(id)}`;
@@ -64,6 +49,49 @@ async function updateJob(id, amountRecords, status) {
   } finally {
     await connection.closeConnection(pool);
     console.log("Conexão fechada");
+  }
+}
+
+async function getJobsInExecutionAndUpdate() {
+  const pool = await connection.openConnection();
+  
+  try {
+
+    // 1. Verificar se existe algum job "executando"
+    const checkQuery = `SELECT ID FROM JOBS WHERE STATUS_JOB = 'em execução'`;
+    const jobsExecuting = await pool.request().query(checkQuery);
+
+    // Se não houver jobs em execução, apenas logue e saia da função
+    if (jobsExecuting.recordset.length === 0) {
+      console.log("Nenhum job em execução encontrado.");
+      return;
+    }
+
+    // 2. Atualizar jobs em execução para "processado"
+    const idsToUpdate = jobsExecuting.recordset.map((job) => job.ID); // Pega os IDs
+
+    if (idsToUpdate.length > 0) {
+      // Construa a query de update com os IDs
+      const updateExecutingJobs = `
+        UPDATE JOBS 
+        SET STATUS_JOB = 'processado',
+            ACAO = 0 
+        WHERE ID IN (${idsToUpdate.join(", ")})
+      `;
+
+      console.log("Query de update para executar:", updateExecutingJobs);  // Log para verificar a query
+      await pool.request().query(updateExecutingJobs);
+      console.log(`Atualizados ${idsToUpdate.length} jobs para 'processado'.`);
+    }
+  } catch (error) {
+    console.error(`Erro ao executar a consulta: ${error.message}`, error); // Log detalhado do erro
+    throw error;  // Repassa o erro para ser tratado no catch do controller
+  } finally {
+    // Verifica se a conexão está aberta e, se estiver, fecha a conexão
+    if (pool && pool.connected) {
+      await connection.closeConnection(pool);  // Fecha a conexão se estiver aberta
+      console.log("Conexão fechada.");
+    }
   }
 }
 
@@ -127,4 +155,5 @@ export default {
   searchUsersOnStage,
   searchUsersInTableUsers,
   updateStageStatus,
+  getJobsInExecutionAndUpdate
 };

@@ -65,4 +65,6 @@ router.get(
   getActiveTablesController.getActiveTablesStore
 );
 
+router.put("/check-job-in-execution", jobslocalDBController.checkJobsInExecutionAndUpdate)
+
 export default router;

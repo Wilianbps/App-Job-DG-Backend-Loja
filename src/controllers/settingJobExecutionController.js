@@ -1,5 +1,5 @@
 import settingJobExecutionModel from "../models/settingJobExecutionModel.js";
-import { setIntervalInMillis } from './../globalConfig.js'
+import { setIntervalInMillis, setStatus} from './../globalConfig.js'
 
 async function updateSettingJobExecution(req, res) {
   try {
@@ -9,9 +9,11 @@ async function updateSettingJobExecution(req, res) {
 
     const result = await settingJobExecutionModel.updateSettingJobExecution(settings);
 
-    if (settings.interval) {
+    if (settings) {
+      const status = settings.status === 0 ? false : true
+      setStatus(status); // Altera o valor do status
       setIntervalInMillis(settings.interval * 60000); // Converte minutos para milissegundos
-    }
+    } 
 
     res.status(200).json(result);
   } catch (error) {

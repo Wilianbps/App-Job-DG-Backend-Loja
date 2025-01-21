@@ -62,7 +62,7 @@ async function updateJob(req, res) {
     // Executa o update dentro do limitador
     const jobResult = await limit(async () => {
       // Simula atraso de 10 segundos (se necessário)
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       const result = await jobsLocalDBModels.updateJob(id, amountRecords, statusJob);
 
@@ -90,45 +90,21 @@ async function updateJob(req, res) {
     // Retorna o resultado do update processado
     return res.status(200).send(jobResult);
   } catch (error) {
-    console.error(error, "Erro na solicitação teste updateJob");
+    console.error(error, "Erro na execução do updateJob");
     return res.status(400).send({ message: error.message });
   }
 }
 
-
-/* async function updateJob(req, res) {
-  setTimeout(async () => {
-    try {
-      const { id } = req.params;
-      const { amountRecords, statusJob } = req.body;
-
-      if (!id || !statusJob) return res.status(400).send();
-
-      const result = await jobsLocalDBModels.updateJob(
-        id,
-        amountRecords,
-        statusJob
-      );
-
-      let transformPropsAllJobs = await result.map((job) => ({
-        id: job.ID,
-        name: job.NOME,
-        startTime: job.DATA_HORA,
-        table: job.TABELA,
-        path: job.CAMINHO,
-        action: job.ACAO,
-        status: job.STATUS_JOB,
-      }));
-
-      transformPropsAllJobs[0].id = transformPropsAllJobs[0].id.toString();
-
-      return res.status(200).send(transformPropsAllJobs[0]);
-    } catch (error) {
-      res.status(400).end();
-      console.log(error, "erro na solicitação teste updateJob");
-    }
-  }, [10000]);
-} */
+async function checkJobsInExecutionAndUpdate(req, res) {
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 120000));
+    await jobsLocalDBModels.getJobsInExecutionAndUpdate();
+    return res.status(200).json({ message: 'Jobs atualizados com sucesso!' });
+  } catch (error) {
+    console.error('Erro no check jobs:', error); // Adiciona um log para ver o erro exato
+    return res.status(400).send({ message: "Erro ao verificar os jobs", error: error.message });
+  }
+}
 
 async function searchOnStage(req, res) {
   try {
@@ -207,4 +183,5 @@ export default {
   updateJob,
   searchOnStage,
   updateStatusOnStage,
+  checkJobsInExecutionAndUpdate
 };
