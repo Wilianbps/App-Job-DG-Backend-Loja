@@ -101,7 +101,7 @@ async function searchUsersOnStage(table, storeCode) {
   const pool = await connection.openConnection();
 
   try {
-    const query = `SELECT * FROM STAGE WHERE (TABELA ='${table}' AND CODIGO_LOJA = '${storeCode}' AND STAGE_STATUS = 1)`;
+    const query = `SELECT TOP 50 * FROM STAGE WHERE (TABELA ='${table}' AND CODIGO_LOJA = '${storeCode}' AND STAGE_STATUS = 1)`;
 
     const result = await pool.request().query(query);
 

@@ -3,6 +3,8 @@ import dataLocalDBModels from "../models/dataLocalDBModels.js";
 async function insertRegisterInLocalDB(req, res) {
   try {
     const dataUsers = req.body;
+    
+    console.log(dataUsers)
 
     if (Object.keys(dataUsers).length === 0)
       return res.status(200).json({ message: "Não havia dados " });

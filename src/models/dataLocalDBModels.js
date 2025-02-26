@@ -16,32 +16,55 @@ async function getUsers() {
 }
 
 async function insertDataInTable(data) {
-  const pool = await connection.openConnection();
+	const pool = await connection.openConnection();
 
-  const identifyOn = `SET IDENTITY_INSERT ${data.table} ON;`;
-  const identifyOff = `SET IDENTITY_INSERT ${data.table} OFF;`;
+	const identifyOn = `SET IDENTITY_INSERT ${data.table} ON;`;
+	const identifyOff = `SET IDENTITY_INSERT ${data.table} OFF;`;
 
-  try {
-    const { stageId, type, table, whereId, ...copyData } = data;
+	let attempt = 0;
+	const maxAttempts = 3;
+	const retryDelay = 2000; // 2 segundos de delay entre tentativas
+    
+	while (attempt < maxAttempts) {
+	try {
+		
+		const { stageId, type, table, whereId, ...copyData } = data;
 
-    const query = `${identifyOn} INSERT INTO ${data.table} (${Object.keys(
-      copyData
-    ).join(", ")}) VALUES (${Object.values(copyData)
-      .map((value) => (value === null ? 'NULL' : `'${value}'`))
-      .join(", ")}) ${identifyOff}`;
+		const query = `${identifyOn} INSERT INTO ${data.table} (${Object.keys(
+		  copyData
+		).join(", ")}) VALUES (${Object.values(copyData)
+		  .map((value) => (value === null ? 'NULL' : `'${value}'`))
+		  .join(", ")}) ${identifyOff}`;
 
-      console.log("query", query)
+		  const result = await pool.request().query(query);
+		  console.log(query)    
+		  console.log("Resultado:", result);
 
-    const result = await pool.request().query(query);
 
-    return result;
-  } catch (error) {
-    console.log(`Erro ao executar a consulta ${error}`);
-  } finally {
-    await connection.closeConnection(pool);
-    console.log("Conexão fechada");
-  }
+			return result;
+		  } catch (error) {
+			  if (error.code === "40001" || error.message.includes("deadlock")) {
+				console.warn(`Deadlock detectado. Tentativa ${attempt + 1} de ${maxAttempts}`);
+				attempt++;
+
+				if (attempt < maxAttempts) {
+				  // Delay de 2 segundos antes de tentar novamente
+				  await new Promise(resolve => setTimeout(resolve, retryDelay));
+				} else {
+				  console.error("Número máximo de tentativas de retry atingido.");
+				  throw new Error('Falha após múltiplas tentativas devido a deadlock');
+				}
+			  } else {
+				console.error("Erro inesperado:", error);
+				throw error;
+			  }
+			}
+	}
+  
 }
+
+
+
 
 async function updateDataInTable(data) {
   const pool = await connection.openConnection();
